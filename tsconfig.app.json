@@ -3,6 +3,12 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "paths": {
+    "@core/*":["./src/app/core/*"],
+    "@shared/*":["./src/app/shared/*"],
+    "@features/*":["./src/app/features/*"],
+    "@env":["./src/environments"]
+    },
     "outDir": "./out-tsc/app",
     "types": [
       "node"
