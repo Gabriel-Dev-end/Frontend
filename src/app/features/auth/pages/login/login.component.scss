@@ -1,0 +1,117 @@
+@use 'sass:color';
+$bg-color: #0d0d0d;       
+$card-bg: #1a1a1a;        
+$accent-color: #00ff41;   
+$text-color: #e0e0e0;    
+$error-color: #ff3e3e;  
+
+.login-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $bg-color;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.login-card {
+  background-color: $card-bg;
+  padding: 2.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba($accent-color, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+
+  h1 {
+    color: $accent-color;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+
+    span {
+      color: $text-color;
+      font-weight: 300;
+    }
+  }
+
+  p {
+    color: color.adjust($text-color, $lightness: -20%);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+  }
+}
+
+.field {
+  text-align: left;
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    color: $accent-color;
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: darken($card-bg, 5%);
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: $text-color;
+    font-family: inherit;
+    transition: border-color 0.3s;
+
+    &:focus {
+      outline: none;
+      border-color: $accent-color;
+    }
+
+    &.error {
+      border-color: $error-color;
+    }
+  }
+}
+
+.error-msg, .api-error {
+  color: $error-color;
+  font-size: 0.75rem;
+  margin-top: 0.4rem;
+  display: block;
+}
+
+.api-error {
+  background-color: rgba($error-color, 0.1);
+  padding: 0.8rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid $error-color;
+}
+
+button {
+  width: 100%;
+  padding: 1rem;
+  background-color: $accent-color;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s;
+
+  &:hover:not(:disabled) {
+    background-color: color.adjust($accent-color, $lightness: 10%);
+    box-shadow: 0 0 15px rgba($accent-color, 0.4);
+  }
+
+  &:disabled {
+    background-color: #333;
+    color: #666;
+    cursor: not-allowed;
+  }
+}
