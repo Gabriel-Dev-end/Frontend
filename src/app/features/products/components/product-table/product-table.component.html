@@ -1,0 +1,65 @@
+<div class="table-wrapper">
+  <!-- Desktop Table -->
+  <table class="products-table" *ngIf="products.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Título</th>
+        <th>Categoria</th>
+        <th>Preço</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products" [attr.data-id]="product.id">
+        <td data-label="ID">{{ product.id }}</td>
+        <td data-label="Título">
+          <div class="product-info">
+            <img 
+              *ngIf="product.imageBase64" 
+              [src]="'data:image/png;base64,' + product.imageBase64" 
+              alt="{{ product.title }}" 
+              class="product-thumbnail" />
+            <div class="product-details">
+              <strong>{{ product.title }}</strong>
+              <p *ngIf="product.description" class="description">{{ product.description | slice:0:50 }}...</p>
+            </div>
+          </div>
+        </td>
+        <td data-label="Categoria">{{ product.category || '-' }}</td>
+        <td data-label="Preço" class="price">{{ formatPrice(product.price) }}</td>
+        <td data-label="Status">
+          <span class="status-badge" [ngClass]="getStatusClass(product.status)">
+            {{ product.status }}
+          </span>
+        </td>
+        <td data-label="Ações" class="actions">
+          <button 
+            class="btn btn-edit" 
+            (click)="onEdit(product)"
+            title="Editar produto">
+            ✎
+          </button>
+          <button 
+            class="btn btn-delete" 
+            (click)="onDelete(product.id)"
+            title="Deletar produto">
+            🗑
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && products.length === 0">
+    <p>Nenhum produto disponível</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Carregando produtos...</p>
+  </div>
+</div>

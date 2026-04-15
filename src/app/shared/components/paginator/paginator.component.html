@@ -1,0 +1,71 @@
+<div class="paginator-container">
+  <div class="paginator-info">
+    <span class="total-elements">
+      Total: {{ totalElements }} {{ totalElements === 1 ? 'item' : 'itens' }}
+    </span>
+    <span class="page-info">
+      Página {{ currentPage + 1 }} de {{ totalPages }}
+    </span>
+  </div>
+
+  <div class="paginator-controls">
+    <button
+      class="btn btn-prev"
+      (click)="onPreviousPage()"
+      [disabled]="isPreviousDisabled"
+      title="Página anterior">
+      ← Anterior
+    </button>
+
+    <div class="page-numbers" *ngIf="totalPages <= 7">
+      <button
+        *ngFor="let page of pagesArray"
+        class="btn btn-page"
+        [class.active]="page === currentPage"
+        (click)="onPageSelect(page)">
+        {{ page + 1 }}
+      </button>
+    </div>
+
+    <div class="page-numbers" *ngIf="totalPages > 7">
+      <!-- Primeira página -->
+      <button
+        class="btn btn-page"
+        [class.active]="currentPage === 0"
+        (click)="onPageSelect(0)">
+        1
+      </button>
+
+      <!-- Reticências início -->
+      <span class="ellipsis" *ngIf="currentPage > 3">...</span>
+
+      <!-- Páginas ao redor da atual -->
+      <button
+        *ngFor="let page of pagesArray | slice:Math.max(1, currentPage - 2):Math.min(totalPages - 1, currentPage + 3)"
+        class="btn btn-page"
+        [class.active]="page === currentPage"
+        (click)="onPageSelect(page)">
+        {{ page + 1 }}
+      </button>
+
+      <!-- Reticências fim -->
+      <span class="ellipsis" *ngIf="currentPage < totalPages - 4">...</span>
+
+      <!-- Última página -->
+      <button
+        class="btn btn-page"
+        [class.active]="currentPage === totalPages - 1"
+        (click)="onPageSelect(totalPages - 1)">
+        {{ totalPages }}
+      </button>
+    </div>
+
+    <button
+      class="btn btn-next"
+      (click)="onNextPage()"
+      [disabled]="isNextDisabled"
+      title="Próxima página">
+      Próximo →
+    </button>
+  </div>
+</div>

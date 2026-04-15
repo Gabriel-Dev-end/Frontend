@@ -1,4 +1,4 @@
-type ProductStatus = 'Vendido'|'Desativado'|'Anunciado'
+type ProductStatus = 'VENDIDO'|'DESATIVADO'|'ANUNCIADO'
 
 export interface ProductDTO{
     id:number,

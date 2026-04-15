@@ -19,6 +19,7 @@ export class AuthService{
             tap(res => {
                 this.salvarToken(res.data.token);
                 this.salvarExpiracao(res.data.expiresIn);
+                this.salvarUsuario(res.data.user);
             })
         );
     }
@@ -37,8 +38,18 @@ export class AuthService{
     loged():boolean{
         return !!this.getToken();
     }
+    salvarUsuario(user: UserDTO): void {
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    getUsuario(): UserDTO | null {
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user) : null;
+    }
+
     logout():void{
         localStorage.removeItem('token');
         localStorage.removeItem('expiresIn');
+        localStorage.removeItem('user');
     }
 }
