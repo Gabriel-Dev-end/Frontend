@@ -1,4 +1,15 @@
 <div class="products-container">
+  <!-- Header with New Product Button -->
+  <div class="products-header">
+    <h1 class="products-title">Produtos</h1>
+    <button 
+      class="btn btn-new-product"
+      (click)="openNewProductModal()"
+      [disabled]="isLoading">
+      ➕ Novo Produto
+    </button>
+  </div>
+
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-state">
     <app-loading-spinner></app-loading-spinner>
@@ -7,48 +18,62 @@
   <!-- Error State -->
   <div *ngIf="hasError && !isLoading" class="error-state">
     <p>Erro ao carregar produtos. Tente novamente.</p>
-    <button (click)="getProducts(currentPage, 10)">Tentar Novamente</button>
+    <button class="btn btn-retry" (click)="getProducts(currentPage, 10)">
+      🔄 Tentar Novamente
+    </button>
   </div>
 
-  <!-- Products List -->
-  <div *ngIf="!isLoading && !hasError && products.length > 0" class="products-grid">
-    <div *ngFor="let product of products" class="product-card">
-      <img *ngIf="product.imageBase64" [src]="'data:image/png;base64,' + product.imageBase64" alt="{{ product.title }}" class="product-image" />
-      <div class="product-info">
-        <h3 class="product-title">{{ product.title }}</h3>
-        <p class="product-category" *ngIf="product.category">{{ product.category }}</p>
-        <p class="product-description">{{ product.description }}</p>
-        <div class="product-footer">
-          <span class="product-price">R$ {{ product.price | number: '1.2-2' }}</span>
-          <span class="product-status" [ngClass]="'status-' + product.status.toLowerCase()">
-            {{ product.status }}
-          </span>
-        </div>
-      </div>
-    </div>
+  <!-- Products Table -->
+  <div *ngIf="!isLoading && !hasError && products.length > 0">
+    <app-product-table 
+      [products]="products"
+      [isLoading]="isLoading"
+      (edit)="onEditProduct($event)"
+      (delete)="onDeleteProduct($event)">
+    </app-product-table>
+
+    <!-- Paginator -->
+    <app-paginator 
+      [currentPage]="currentPage"
+      [totalPages]="totalPages"
+      [totalElements]="totalElements"
+      (pageChange)="changePage($event)">
+    </app-paginator>
   </div>
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && !hasError && products.length === 0" class="empty-state">
     <p>Nenhum produto disponível no momento.</p>
-  </div>
-
-  <!-- Pagination -->
-  <div *ngIf="!isLoading && !hasError && totalPages > 1" class="pagination">
     <button 
-      [disabled]="currentPage === 0" 
-      (click)="changePage(currentPage - 1)"
-      class="pagination-btn">
-      Anterior
-    </button>
-    <span class="pagination-info">
-      Página {{ currentPage + 1 }} de {{ totalPages }}
-    </span>
-    <button 
-      [disabled]="currentPage === totalPages - 1" 
-      (click)="changePage(currentPage + 1)"
-      class="pagination-btn">
-      Próxima
+      class="btn btn-new-product-empty"
+      (click)="openNewProductModal()">
+      ➕ Criar Primeiro Produto
     </button>
   </div>
 </div>
+
+<!-- Create/Edit Product Modal -->
+<app-modal *ngIf="isModalOpen" (close)="closeModal()">
+  <div class="modal-header">
+    <h2 class="modal-title">
+      {{ productSelecionado ? 'Editar Produto' : 'Novo Produto' }}
+    </h2>
+  </div>
+  <app-product-form
+    [product]="productSelecionado"
+    (formSubmit)="createProduct($event)">
+  </app-product-form>
+</app-modal>
+
+<!-- Delete Confirmation Modal -->
+<app-modal *ngIf="isConfirmDialogOpen" (close)="closeConfirmDialog()">
+  <app-confirm-dialog
+    title="Deletar Produto?"
+    [message]="'Tem certeza que deseja deletar o produto: ' + (productToDelete?.title || '')"
+    confirmText="Deletar"
+    cancelText="Cancelar"
+    [isDangerous]="true"
+    (confirm)="confirmDelete()"
+    (cancel)="closeConfirmDialog()">
+  </app-confirm-dialog>
+</app-modal>

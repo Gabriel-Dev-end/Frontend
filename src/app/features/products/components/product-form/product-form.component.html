@@ -1,0 +1,113 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-container">
+  <!-- Title Field -->
+  <div class="form-group">
+    <label for="title" class="form-label">
+      Título *
+    </label>
+    <input
+      id="title"
+      type="text"
+      class="form-input"
+      formControlName="title"
+      placeholder="Nome do produto"
+      [class.is-invalid]="title?.invalid && title?.touched" />
+    <span class="form-error" *ngIf="title?.invalid && title?.touched">
+      <span *ngIf="title?.errors?.['required']">Título é obrigatório</span>
+    </span>
+  </div>
+
+  <!-- Price Field -->
+  <div class="form-group">
+    <label for="price" class="form-label">
+      Preço (R$)
+    </label>
+    <input
+      id="price"
+      type="number"
+      class="form-input"
+      formControlName="price"
+      placeholder="0,00"
+      step="0.01"
+      min="0"
+      [class.is-invalid]="price?.invalid && price?.touched" />
+    <span class="form-error" *ngIf="price?.invalid && price?.touched">
+      <span *ngIf="price?.errors?.['min']">Preço deve ser maior que 0,01</span>
+    </span>
+  </div>
+
+  <!-- Description Field -->
+  <div class="form-group">
+    <label for="description" class="form-label">
+      Descrição
+    </label>
+    <textarea
+      id="description"
+      class="form-textarea"
+      formControlName="description"
+      placeholder="Descrição detalhada do produto"
+      rows="4"></textarea>
+  </div>
+
+  <!-- Category Field -->
+  <div class="form-group">
+    <label for="category" class="form-label">
+      Categoria
+    </label>
+    <input
+      id="category"
+      type="text"
+      class="form-input"
+      formControlName="category"
+      placeholder="Ex: Eletrônicos, Móveis, etc" />
+  </div>
+
+  <!-- Status Field -->
+  <div class="form-group">
+    <label for="status" class="form-label">
+      Status
+    </label>
+    <select
+      id="status"
+      class="form-select"
+      formControlName="status">
+      <option *ngFor="let s of statuses" [value]="s">
+        {{ s }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Image Upload -->
+  <div class="form-group">
+    <label for="image" class="form-label">
+      Imagem do Produto
+    </label>
+    <div class="image-upload">
+      <input
+        id="image"
+        type="file"
+        accept="image/*"
+        class="form-file-input"
+        (change)="onFileSelected($event)" />
+      <label for="image" class="form-file-label">
+        📷 Selecionar imagem
+      </label>
+    </div>
+
+    <!-- Image Preview -->
+    <div class="image-preview" *ngIf="hasImagePreview()">
+      <img [src]="getImageSource()" alt="Preview da imagem" />
+      <p class="preview-text">Imagem selecionada</p>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="form-actions">
+    <button
+      type="submit"
+      class="btn btn-submit"
+      [disabled]="form.invalid || isLoading">
+      <span *ngIf="!isLoading">{{ product ? 'Atualizar Produto' : 'Criar Produto' }}</span>
+      <span *ngIf="isLoading">Enviando...</span>
+    </button>
+  </div>
+</form>

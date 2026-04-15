@@ -14,16 +14,14 @@ export class ProductTableComponent {
   @Input() isLoading: boolean = false;
 
   @Output() edit = new EventEmitter<ProductDTO>();
-  @Output() delete = new EventEmitter<number>();
+  @Output() delete = new EventEmitter<ProductDTO>();
 
   onEdit(product: ProductDTO): void {
     this.edit.emit(product);
   }
 
-  onDelete(id: number): void {
-    if (confirm('Tem certeza que deseja deletar este produto?')) {
-      this.delete.emit(id);
-    }
+  onDelete(product: ProductDTO): void {
+    this.delete.emit(product);
   }
 
   getStatusClass(status: string): string {
