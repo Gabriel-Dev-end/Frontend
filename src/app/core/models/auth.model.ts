@@ -22,7 +22,7 @@ export interface LoginSucessfullDTO{
 
 export interface UserProfileDTO{
     message:string,
-    data:UserDTO
+    user:UserDTO
 }
 export interface TokenValidationDTO{
     message:string,
