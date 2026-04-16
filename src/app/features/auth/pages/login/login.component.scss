@@ -59,7 +59,7 @@ $error-color: #ff3e3e;
   input {
     width: 100%;
     padding: 0.8rem;
-    background-color: darken($card-bg, 5%);
+    background-color: color.adjust($card-bg, $lightness: -5%);
     border: 1px solid #333;
     border-radius: 4px;
     color: $text-color;

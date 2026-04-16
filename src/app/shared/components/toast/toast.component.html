@@ -1,7 +1,7 @@
 <div *ngIf="toast" 
      class="fixed bottom-4 right-4 z-50 min-w-[250px] p-4 rounded-md shadow-lg text-white transition-all duration-300"
      [ngClass]="{
-       'bg-green-600': toast.tipo === 'sucess',
+       'bg-green-600': toast.tipo === 'success',
        'bg-red-600': toast.tipo === 'error'
      }">
   <div class="flex items-center justify-between">

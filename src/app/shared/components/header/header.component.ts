@@ -20,7 +20,9 @@ export class HeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadUser();
+    if (typeof window !== 'undefined') {
+      this.loadUser();
+    }
   }
 
   loadUser(): void {

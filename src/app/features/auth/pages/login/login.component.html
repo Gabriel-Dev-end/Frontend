@@ -1,61 +1,112 @@
 <div class="h-screen flex items-center justify-center bg-zinc-950 font-mono">
   
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" 
+  <form [formGroup]="isRegistering ? registerForm : loginForm" 
+        (ngSubmit)="onSubmit()" 
         class="max-w-md w-full p-8 rounded-xl shadow-2xl bg-zinc-900 border border-zinc-800">
     
     <div class="text-center mb-8">
       <h1 class="text-3xl font-bold text-emerald-500 tracking-tighter uppercase">
         SIPEL <span class="text-zinc-100">Auth</span>
       </h1>
-      <p class="text-zinc-500 text-sm mt-2">Acesso ao terminal de produção</p>
+      <p class="text-zinc-500 text-sm mt-2">
+        {{ isRegistering ? 'Criar nova conta' : 'Acesso ao terminal de produção' }}
+      </p>
     </div>
 
+    <!-- Navigation Tabs -->
+    <div class="flex gap-2 mb-8 border-b border-zinc-800">
+      <button 
+        type="button"
+        (click)="toggleRegistering()"
+        [class.border-emerald-500]="!isRegistering"
+        [class.text-emerald-500]="!isRegistering"
+        [class.text-zinc-500]="isRegistering"
+        class="flex-1 py-2 px-4 text-sm uppercase font-bold border-b-2 transition-colors"
+      >
+        Login
+      </button>
+      <button 
+        type="button"
+        (click)="toggleRegistering()"
+        [class.border-emerald-500]="isRegistering"
+        [class.text-emerald-500]="isRegistering"
+        [class.text-zinc-500]="!isRegistering"
+        class="flex-1 py-2 px-4 text-sm uppercase font-bold border-b-2 transition-colors"
+      >
+        Registrar
+      </button>
+    </div>
+
+    <!-- E-mail Field -->
     <div class="mb-6">
       <label class="block text-emerald-500 text-xs uppercase font-bold mb-2 ml-1">E-mail</label>
       
       <input 
         type="email" 
-        formControlName="email"
+        [formControl]="$any(currentEmailControl)"
         placeholder="user@pelegrine.com"
         class="w-full rounded-lg p-3 bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder-zinc-700 outline-none focus:border-emerald-500 transition-colors"
-        [class.border-red-500]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        [class.border-red-500]="currentEmailControl?.invalid && currentEmailControl?.touched"
       >
       
-      <span *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" 
+      <span *ngIf="currentEmailControl?.invalid && currentEmailControl?.touched" 
             class="text-red-500 text-[10px] mt-1 ml-1 block uppercase font-bold">
         E-mail inválido
       </span>
     </div>
 
-    <div class="mb-8">
+    <!-- Password Field -->
+    <div class="mb-6">
       <label class="block text-emerald-500 text-xs uppercase font-bold mb-2 ml-1">Senha</label>
       
       <input 
         type="password" 
-        formControlName="password"
+        [formControl]="$any(currentPasswordControl)"
         placeholder="••••••"
         class="w-full rounded-lg p-3 bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder-zinc-700 outline-none focus:border-emerald-500 transition-colors"
-        [class.border-red-500]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+        [class.border-red-500]="currentPasswordControl?.invalid && currentPasswordControl?.touched"
       >
       
-      <span *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" 
+      <span *ngIf="currentPasswordControl?.invalid && currentPasswordControl?.touched" 
             class="text-red-500 text-[10px] mt-1 ml-1 block uppercase font-bold">
-        Mínimo 6 caracteres
+        Mínimo 4 caracteres, máximo 12
       </span>
     </div>
 
+    <!-- Confirm Password Field (Registration Only) -->
+    <div *ngIf="isRegistering" class="mb-8">
+      <label class="block text-emerald-500 text-xs uppercase font-bold mb-2 ml-1">Confirmar Senha</label>
+      
+      <input 
+        type="password" 
+        formControlName="confirmPassword"
+        placeholder="••••••"
+        class="w-full rounded-lg p-3 bg-zinc-950 border border-zinc-800 text-zinc-200 placeholder-zinc-700 outline-none focus:border-emerald-500 transition-colors"
+        [class.border-red-500]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+      >
+      
+      <span *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" 
+            class="text-red-500 text-[10px] mt-1 ml-1 block uppercase font-bold">
+        Senhas não correspondem
+      </span>
+    </div>
+
+    <div *ngIf="!isRegistering" class="mb-8"></div>
+
+    <!-- Error Message -->
     <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-500 text-xs text-center uppercase font-bold">
       {{ errorMessage }}
     </div>
 
+    <!-- Submit Button -->
     <button 
       type="submit" 
-      [disabled]="isLoading"
+      [disabled]="isLoading || (isRegistering ? registerForm.invalid : loginForm.invalid)"
       class="w-full py-3 rounded-lg font-bold uppercase tracking-widest transition-all
              bg-emerald-500 text-zinc-950 hover:bg-emerald-400 active:scale-95
              disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/10"
     >
-      {{ isLoading ? 'Autenticando...' : 'Entrar' }}
+      {{ isLoading ? (isRegistering ? 'Criando conta...' : 'Autenticando...') : (isRegistering ? 'Registrar' : 'Entrar') }}
     </button>
 
   </form>

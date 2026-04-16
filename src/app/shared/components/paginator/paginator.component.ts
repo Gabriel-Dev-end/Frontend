@@ -15,6 +15,8 @@ export class PaginatorComponent {
 
   @Output() pageChange = new EventEmitter<number>();
 
+  Math = Math;
+
   onPreviousPage(): void {
     if (this.currentPage > 0) {
       this.pageChange.emit(this.currentPage - 1);

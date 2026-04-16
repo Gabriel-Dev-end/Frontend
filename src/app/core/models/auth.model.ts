@@ -2,6 +2,10 @@ export interface AuthRequestDTO{
     email: string,
     password:string
 }
+export interface RegisterRequestDTO{
+    email: string,
+    password: string
+}
 export interface UserDTO{
     id:number,
     email:string
