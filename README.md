@@ -77,7 +77,7 @@ ng serve
 
 ```
 E-mail:  admin@sipel.com
-Senha:   password
+Senha:   sipel1234
 ```
 
 ---
@@ -166,21 +166,3 @@ Em vez de criar dois componentes de formulário separados, o `ProductFormCompone
 A listagem consome o endpoint `GET /api/v1/products?page=&size=&sort=id,asc` que retorna apenas os produtos da página solicitada. Isso evita carregar todos os registros de uma vez, tornando a aplicação performática independentemente do volume de dados no banco.
 
 ---
-
-## Funcionalidades implementadas
-
-### Requisitos obrigatórios
-- [x] Tela de login consumindo `POST /api/v1/auth/login`
-- [x] Armazenamento do token JWT e redirecionamento após login
-- [x] Proteção de rotas — usuários não autenticados são redirecionados para o login
-- [x] Redirecionamento automático ao expirar o token (via interceptor)
-- [x] Listagem de produtos com paginação server-side
-- [x] Operações de escrita (criar, editar e deletar)
-
-### Diferenciais implementados
-- [x] CRUD completo de produtos
-- [x] Componentização e organização clara de pastas
-- [x] Tratamento de erros de rede, token inválido e campos obrigatórios
-- [x] Feedback visual — loading spinner, toasts de sucesso/erro, estado de carregamento nos botões
-- [x] Layout responsivo — adaptado para mobile e desktop
-- [x] Tipagem adequada com TypeScript — zero `any` no projeto
