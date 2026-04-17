@@ -54,7 +54,7 @@ docker-compose up -d
 
 ```bash
 # 1. Clone este repositório
-git clone <url-deste-repositorio>
+git clone https://github.com/Gabriel-Dev-end/Frontend.git
 cd sipel-frontend
 
 # 2. Instale as dependências
