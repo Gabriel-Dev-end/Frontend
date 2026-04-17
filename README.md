@@ -55,15 +55,17 @@ docker-compose up -d
 ```bash
 # 1. Clone este repositório
 git clone https://github.com/Gabriel-Dev-end/Frontend.git
+
+# 2. Acesse a pasta do repositório
 cd sipel-frontend
 
-# 2. Instale as dependências
+# 4. Instale as dependências
 npm install
 
-# 3. Suba o servidor de desenvolvimento
+# 5. Suba o servidor de desenvolvimento
 ng serve
 
-# 4. Acesse no browser
+# 6. Acesse no browser
 # http://localhost:4200
 ```
 
