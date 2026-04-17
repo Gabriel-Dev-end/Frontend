@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../services/product';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -9,12 +9,15 @@ import { ProductFormComponent } from '../../components/product-form/product-form
 import { ModalComponent } from '@shared/components/modal/modal.component';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 import { PaginatorComponent } from '@shared/components/paginator/paginator.component';
+import { HeaderComponent } from '@shared/components/header/header.component';
+import { Subject, takeUntil, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
   imports: [
     CommonModule,
+    HeaderComponent,
     LoadingSpinner,
     ProductTableComponent,
     ProductFormComponent,
@@ -25,7 +28,10 @@ import { PaginatorComponent } from '@shared/components/paginator/paginator.compo
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
+  // Gerenciamento de subscriptions
+  private destroy$ = new Subject<void>();
+
   // Estados de dados e controle
   products: ProductDTO[] = [];
   isLoading = false;
@@ -56,24 +62,35 @@ export class ProductListComponent implements OnInit {
     this.getProducts(0, 10);
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   getProducts(page: number, size: number): void {
     this.isLoading = true;
     this.hasError = false;
 
-    this.productService.getProducts(page, size).subscribe({
-      next: (response) => {
-        this.products = response.data;
-        this.totalElements = response.totalElements;
-        this.totalPages = response.totalPages;
-        this.currentPage = page;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.hasError = true;
-        this.toastService.show('Erro ao carregar a lista de produtos', 'error');
-      }
-    });
+    this.productService.getProducts(page, size)
+      .pipe(
+        timeout(15000), // timeout de 15 segundos
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          this.products = response.data;
+          this.totalElements = response.totalElements;
+          this.totalPages = response.totalPages;
+          this.currentPage = page;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.hasError = true;
+          console.error('Erro ao carregar produtos:', err);
+          this.toastService.show('Erro ao carregar a lista de produtos', 'error');
+        }
+      });
   }
 
   changePage(newPage: number): void {
@@ -103,37 +120,47 @@ export class ProductListComponent implements OnInit {
   private createNewProduct(formData: ProductRequestDTO): void {
     this.isSubmittingForm = true;
 
-    this.productService.createProduct(formData).subscribe({
-      next: (response) => {
-        this.isSubmittingForm = false;
-        this.toastService.show('Produto criado com sucesso!', 'success');
-        this.closeModal();
-        this.getProducts(this.currentPage, 10);
-      },
-      error: (err) => {
-        this.isSubmittingForm = false;
-        const errorMessage = err?.error?.message || 'Erro ao criar produto';
-        this.toastService.show(errorMessage, 'error');
-      }
-    });
+    this.productService.createProduct(formData)
+      .pipe(
+        timeout(10000),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          this.isSubmittingForm = false;
+          this.toastService.show('Produto criado com sucesso!', 'success');
+          this.closeModal();
+          this.getProducts(this.currentPage, 10);
+        },
+        error: (err) => {
+          this.isSubmittingForm = false;
+          const errorMessage = err?.error?.message || 'Erro ao criar produto';
+          this.toastService.show(errorMessage, 'error');
+        }
+      });
   }
 
   private updateProduct(id: number, formData: ProductRequestDTO): void {
     this.isSubmittingForm = true;
 
-    this.productService.updateProduct(id, formData).subscribe({
-      next: (response) => {
-        this.isSubmittingForm = false;
-        this.toastService.show('Produto atualizado com sucesso!', 'success');
-        this.closeModal();
-        this.getProducts(this.currentPage, 10);
-      },
-      error: (err) => {
-        this.isSubmittingForm = false;
-        const errorMessage = err?.error?.message || 'Erro ao atualizar produto';
-        this.toastService.show(errorMessage, 'error');
-      }
-    });
+    this.productService.updateProduct(id, formData)
+      .pipe(
+        timeout(10000),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (response) => {
+          this.isSubmittingForm = false;
+          this.toastService.show('Produto atualizado com sucesso!', 'success');
+          this.closeModal();
+          this.getProducts(this.currentPage, 10);
+        },
+        error: (err) => {
+          this.isSubmittingForm = false;
+          const errorMessage = err?.error?.message || 'Erro ao atualizar produto';
+          this.toastService.show(errorMessage, 'error');
+        }
+      });
   }
 
   onEditProduct(product: ProductDTO): void {
@@ -160,18 +187,23 @@ export class ProductListComponent implements OnInit {
   private deleteProduct(id: number): void {
     this.isDeletingProduct = true;
 
-    this.productService.deleteProduct(id).subscribe({
-      next: () => {
-        this.isDeletingProduct = false;
-        this.toastService.show('Produto deletado com sucesso!', 'success');
-        this.closeConfirmDialog();
-        this.getProducts(this.currentPage, 10);
-      },
-      error: (err) => {
-        this.isDeletingProduct = false;
-        const errorMessage = err?.error?.message || 'Erro ao deletar produto';
-        this.toastService.show(errorMessage, 'error');
-      }
-    });
+    this.productService.deleteProduct(id)
+      .pipe(
+        timeout(10000),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: () => {
+          this.isDeletingProduct = false;
+          this.toastService.show('Produto deletado com sucesso!', 'success');
+          this.closeConfirmDialog();
+          this.getProducts(this.currentPage, 10);
+        },
+        error: (err) => {
+          this.isDeletingProduct = false;
+          const errorMessage = err?.error?.message || 'Erro ao deletar produto';
+          this.toastService.show(errorMessage, 'error');
+        }
+      });
   }
 }

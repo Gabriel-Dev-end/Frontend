@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable, tap, catchError } from "rxjs";
+import { HttpClient, HttpErrorResponse, HttpHeaders } from "@angular/common/http";
+import { Observable, tap, catchError, throwError } from "rxjs";
 import { environment } from "../../../environments/environment";
 import {
     AuthRequestDTO,
@@ -20,36 +20,50 @@ export class AuthService{
     });
 
     constructor(private http: HttpClient){}
+
+    private handleError(error: HttpErrorResponse) {
+        let errorMessage = 'Erro desconhecido';
+        
+        if (error.status === 0) {
+            errorMessage = 'Servidor indisponível. Verifique a conexão.';
+        } else if (error.status === 400) {
+            errorMessage = error.error?.message || 'Dados inválidos. Verifique os campos.';
+        } else if (error.status === 401) {
+            errorMessage = 'Email ou senha incorretos.';
+        } else if (error.status === 403) {
+            errorMessage = 'Acesso negado. Verifique suas credenciais.';
+        } else if (error.status === 404) {
+            errorMessage = 'Recurso não encontrado.';
+        } else if (error.status === 409) {
+            errorMessage = error.error?.message || 'Email já cadastrado.';
+        } else if (error.status === 500) {
+            errorMessage = 'Erro no servidor. Tente novamente mais tarde.';
+        } else if (error.status >= 500) {
+            errorMessage = 'Erro no servidor. Tente novamente mais tarde.';
+        } else {
+            errorMessage = error.error?.message || error.message || 'Erro ao processar requisição';
+        }
+        
+        console.error('HTTP Error:', { status: error.status, message: errorMessage });
+        return throwError(() => new Error(errorMessage));
+    }
     
     login(credentials:AuthRequestDTO): Observable<LoginSucessfullDTO>{
-        console.log('Login attempt:', credentials.email);
-        console.log('API URL:', `${this.API_URL}/login`);
         return this.http.post<LoginSucessfullDTO>(
             `${this.API_URL}/login`,
             credentials,
             { headers: this.headers }
         ).pipe(
             tap(res => {
-                console.log('Login successful');
                 this.salvarToken(res.data.token);
                 this.salvarExpiracao(res.data.expiresIn);
                 this.salvarUsuario(res.data.user);
             }),
-            catchError(err => {
-                console.error('Login HTTP error:', {
-                    status: err.status,
-                    statusText: err.statusText,
-                    message: err.message,
-                    url: err.url
-                });
-                throw err;
-            })
+            catchError((err: HttpErrorResponse) => this.handleError(err))
         );
     }
 
     register(credentials: RegisterRequestDTO): Observable<string> {
-        console.log('Register attempt:', credentials.email);
-        console.log('API URL:', `${this.API_URL}/register`);
         return this.http.post(
             `${this.API_URL}/register`,
             credentials,
@@ -59,17 +73,9 @@ export class AuthService{
             }
         ).pipe(
             tap(res => {
-                console.log('Register successful:', res);
+                console.log('Registro realizado com sucesso');
             }),
-            catchError(err => {
-                console.error('Register HTTP error:', {
-                    status: err.status,
-                    statusText: err.statusText,
-                    message: err.message,
-                    url: err.url
-                });
-                throw err;
-            })
+            catchError((err: HttpErrorResponse) => this.handleError(err))
         );
     }
 

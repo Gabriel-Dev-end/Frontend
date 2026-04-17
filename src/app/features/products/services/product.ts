@@ -7,7 +7,7 @@ import { ProductDTO, ProductRequestDTO, ProductsResponseDTO } from "@core/models
   providedIn:'root'
 })
 export class ProductService{
-  private readonly API='http://localhost:8080/api/v1/products';
+  private readonly API='/api/v1/products';
 
   constructor(private http: HttpClient){}
 

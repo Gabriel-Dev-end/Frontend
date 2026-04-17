@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PaginatorComponent } from './paginator.component';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('PaginatorComponent', () => {
   let component: PaginatorComponent;
@@ -43,11 +44,21 @@ describe('PaginatorComponent', () => {
   });
 
   it('should emit pageChange with previous page number', () => {
-    spyOn(component.pageChange, 'emit');
+    const pageChangeSpy = vi.spyOn(component.pageChange, 'emit');
     component.currentPage = 2;
     component.totalPages = 5;
     component.onPreviousPage();
-    expect(component.pageChange.emit).toHaveBeenCalledWith(1);
+    expect(pageChangeSpy).toHaveBeenCalledWith(1);
+  });
+
+  it('should emit pageChange with next page number', () => {
+    const pageChangeSpy = vi.spyOn(component.pageChange, 'emit');
+    component.currentPage = 1;
+    component.totalPages = 5;
+    component.onNextPage();
+    expect(pageChangeSpy).toHaveBeenCalledWith(2);
+  });
+});
   });
 
   it('should emit pageChange with next page number', () => {

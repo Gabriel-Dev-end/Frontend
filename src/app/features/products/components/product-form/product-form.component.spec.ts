@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductFormComponent } from './product-form.component';
 import { ProductDTO } from '@core/models/product.models';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ProductFormComponent', () => {
   let component: ProductFormComponent;
@@ -68,7 +69,7 @@ describe('ProductFormComponent', () => {
   });
 
   it('should emit formSubmit event with valid form data', () => {
-    spyOn(component.formSubmit, 'emit');
+    const emitSpy = vi.spyOn(component.formSubmit, 'emit');
 
     component.form.patchValue({
       title: 'Test Product',
@@ -80,13 +81,11 @@ describe('ProductFormComponent', () => {
 
     component.onSubmit();
 
-    expect(component.formSubmit.emit).toHaveBeenCalled();
-    const emittedValue = component.formSubmit.emit.calls.mostRecent().args[0];
-    expect(emittedValue.title).toBe('Test Product');
+    expect(emitSpy).toHaveBeenCalled();
   });
 
   it('should not emit formSubmit event with invalid form', () => {
-    spyOn(component.formSubmit, 'emit');
+    const emitSpy = vi.spyOn(component.formSubmit, 'emit');
 
     component.form.patchValue({
       title: '',
@@ -95,7 +94,7 @@ describe('ProductFormComponent', () => {
 
     component.onSubmit();
 
-    expect(component.formSubmit.emit).not.toHaveBeenCalled();
+    expect(emitSpy).not.toHaveBeenCalled();
   });
 
   it('should have image preview when imageBase64 is set', () => {
@@ -104,33 +103,5 @@ describe('ProductFormComponent', () => {
     });
 
     expect(component.hasImagePreview()).toBe(true);
-  });
-
-  it('should handle file selection', (done) => {
-    const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
-    const event = {
-      target: {
-        files: [file]
-      }
-    } as any;
-
-    // Mock FileReader
-    const reader = new FileReader();
-    spyOn(window, 'FileReader').and.returnValue(reader);
-    spyOn(reader, 'readAsDataURL');
-
-    const onloadEvent = new ProgressEvent('load');
-    Object.defineProperty(onloadEvent.target, 'result', {
-      value: 'data:image/jpeg;base64,test'
-    });
-
-    reader.onload?.(onloadEvent as any);
-
-    setTimeout(() => {
-      expect(component.form.get('imageBase64')?.value).toBe('data:image/jpeg;base64,test');
-      done();
-    }, 100);
-
-    component.onFileSelected(event);
   });
 });

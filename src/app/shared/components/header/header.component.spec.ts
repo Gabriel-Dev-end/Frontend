@@ -2,27 +2,33 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HeaderComponent } from './header.component';
 import { AuthService } from '@core/services/auth.service';
 import { Router } from '@angular/router';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
   let fixture: ComponentFixture<HeaderComponent>;
-  let authService: jasmine.SpyObj<AuthService>;
-  let router: jasmine.SpyObj<Router>;
+  let authService: any;
+  let router: any;
 
   beforeEach(async () => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['getUsuario', 'logout']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    const authServiceMock = {
+      getUsuario: vi.fn().mockReturnValue(null),
+      logout: vi.fn()
+    };
+    const routerMock = {
+      navigate: vi.fn()
+    };
 
     await TestBed.configureTestingModule({
       imports: [HeaderComponent],
       providers: [
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authServiceMock },
+        { provide: Router, useValue: routerMock }
       ]
     }).compileComponents();
 
-    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    authService = TestBed.inject(AuthService);
+    router = TestBed.inject(Router);
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
@@ -34,7 +40,7 @@ describe('HeaderComponent', () => {
 
   it('should load user on init', () => {
     const mockUser = { id: 1, email: 'test@example.com' };
-    authService.getUsuario.and.returnValue(mockUser);
+    authService.getUsuario.mockReturnValue(mockUser);
 
     fixture.detectChanges();
 
@@ -43,10 +49,14 @@ describe('HeaderComponent', () => {
   });
 
   it('should call logout and navigate on logout button click', () => {
-    authService.getUsuario.and.returnValue({ id: 1, email: 'test@example.com' });
+    authService.getUsuario.mockReturnValue({ id: 1, email: 'test@example.com' });
     fixture.detectChanges();
 
     component.onLogout();
+    expect(authService.logout).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/login']);
+  });
+});
 
     expect(authService.logout).toHaveBeenCalled();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
