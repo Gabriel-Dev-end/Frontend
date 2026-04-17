@@ -78,6 +78,7 @@ ng serve
 ```
 E-mail:  admin@sipel.com
 Senha:   sipel1234
+Ou: Registrar Novo Usuário 
 ```
 
 ---
